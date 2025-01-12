@@ -4,7 +4,7 @@ ShrekNFC or Swamp Near Field Communication is an application that writes message
 ## Requirements
 The application only works on Windows and with the specified NFC reader and NFC tags.
 - Java 21
-- NFC reader (ACR122U from ACS)
+- NFC reader ([ACR122U from ACS](https://www.acs.com.hk/en/products/3/acr122u-usb-nfc-reader/)))
 - NFC tag (MIFARE Ultralight)
 
 ## Use
