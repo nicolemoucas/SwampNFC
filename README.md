@@ -1,5 +1,5 @@
-# nfcreader
-Application that writes messages to a NFC tag
+# SNFC : Swamp Near Field Communication 🐸
+ShrekNFC or Swamp Near Field Communication is an application that writes messages to an NFC tag.
 
 ## Authors
 - CASTRO MOUCHERON Nicole
