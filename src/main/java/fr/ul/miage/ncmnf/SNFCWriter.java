@@ -3,7 +3,7 @@ package fr.ul.miage.ncmnf;
 import javax.smartcardio.*;
 import java.util.List;
 
-public class NFCWriter {
+public class SNFCWriter {
     public static void main(String[] args) {
         String SHREKSOPHONE = "https://youtu.be/vXYVfk7agqU?si=YRzvv9M05xF8nsnf";
 

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>fr.ul.miage.ncmnf</groupId>
-    <artifactId>NFC</artifactId>
+    <artifactId>SNFC</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -21,7 +21,39 @@
             <artifactId>jnasmartcardio</artifactId>
             <version>0.2.7</version>
         </dependency>
-
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>21</source>
+                    <target>21</target>
+                    <compilerArgs>
+                        <arg>--add-modules</arg>
+                        <arg>java.smartcardio</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+
+            <!-- Generate JAR -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>fr.ul.miage.ncmnf.SNFCWriter</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
