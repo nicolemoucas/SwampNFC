@@ -18,7 +18,7 @@ public class SNFCWriter {
             }
 
             // Select the first terminal
-            CardTerminal terminal = terminals.get(0);
+            CardTerminal terminal = terminals.getFirst();
             System.out.println("Using reader: " + terminal.getName());
 
             // Wait for a card to be present
