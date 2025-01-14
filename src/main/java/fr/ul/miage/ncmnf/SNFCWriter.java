@@ -12,13 +12,11 @@ public class SNFCWriter {
             TerminalFactory factory = TerminalFactory.getDefault();
             List<CardTerminal> terminals = factory.terminals().list();
 
-            if (terminals.isEmpty()) {
-                System.out.println("No NFC readers found.");
-                return;
-            }
+            // TODO: Check if a reader is available
+            // System.out.println("No NFC readers found.");
 
-            // Select the first terminal
-            CardTerminal terminal = terminals.getFirst();
+            // TODO: Select the first terminal
+            CardTerminal terminal;
             System.out.println("Using reader: " + terminal.getName());
 
             // Wait for a card to be present
@@ -27,7 +25,8 @@ public class SNFCWriter {
 
             // Connect to the card
             Card card = terminal.connect("*");
-            CardChannel channel = card.getBasicChannel();
+            // TODO: Get the card's basic channel
+            CardChannel channel;
             System.out.println("Card detected!");
 
             // Write to the NFC tag
@@ -44,7 +43,7 @@ public class SNFCWriter {
     private static void writeUrlToUltralight(CardChannel channel, String url) {
         try {
             // Step 1: Convert the URL into NDEF format for Ultralight
-            byte[] ndefMessage = createNDEFMessage(url);
+            // TODO: Create the NDEF message
 
             // Step 2: Write the NDEF message to consecutive pages
             int page = 4; // Start writing at Page 4
@@ -61,12 +60,13 @@ public class SNFCWriter {
                     if (i + j < ndefMessage.length) {
                         command[5 + j] = ndefMessage[i + j];
                     } else {
-                        command[5 + j] = (byte) 0x00; // Pad with zeros
+                        // TODO: Pad with zeros
+                        command[5 + j];
                     }
                 }
 
                 // Transmit the command to write to the page
-                ResponseAPDU response = channel.transmit(new CommandAPDU(command));
+                // TODO: Transmit the command of type CommandAPDU through the channel
                 if (response.getSW1() == 0x90 && response.getSW2() == 0x00) {
                     System.out.println("Page " + page + " written successfully.");
                 } else {
