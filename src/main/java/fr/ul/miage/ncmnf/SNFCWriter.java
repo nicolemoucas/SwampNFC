@@ -67,6 +67,7 @@ public class SNFCWriter {
 
                 // Transmit the command to write to the page
                 // TODO: Transmit the command of type CommandAPDU through the channel
+                // Hint: Check out the rest of the code and the available methods
                 if (response.getSW1() == 0x90 && response.getSW2() == 0x00) {
                     System.out.println("Page " + page + " written successfully.");
                 } else {
