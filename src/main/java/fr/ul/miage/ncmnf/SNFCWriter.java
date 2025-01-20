@@ -1,9 +1,6 @@
 package fr.ul.miage.ncmnf;
 
-import javax.smartcardio.Card;
-import javax.smartcardio.CardChannel;
-import javax.smartcardio.CardTerminal;
-import javax.smartcardio.TerminalFactory;
+import javax.smartcardio.*;
 import java.util.List;
 
 public class SNFCWriter {
