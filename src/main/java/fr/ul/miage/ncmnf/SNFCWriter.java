@@ -1,6 +1,9 @@
 package fr.ul.miage.ncmnf;
 
-import javax.smartcardio.*;
+import javax.smartcardio.Card;
+import javax.smartcardio.CardChannel;
+import javax.smartcardio.CardTerminal;
+import javax.smartcardio.TerminalFactory;
 import java.util.List;
 
 public class SNFCWriter {
@@ -12,21 +15,21 @@ public class SNFCWriter {
             TerminalFactory factory = TerminalFactory.getDefault();
             List<CardTerminal> terminals = factory.terminals().list();
 
-            // TODO: Check if a reader is available
-            // System.out.println("No NFC readers found.");
+            // TODO: Check if no readers are available
+            System.out.println("No NFC readers found.");
 
-            // TODO: Select the first terminal
-            CardTerminal terminal;
+            // TODO: Select the first terminal of type CardTerminal (terminal)
             System.out.println("Using reader: " + terminal.getName());
 
-            // Wait for a card to be present
+            // TODO: Wait for a card to be *present*
+            // Hint: check the suggested methods from CardTerminal
+            // Hint 2: Select no timeout
             System.out.println("Waiting for NFC card...");
-            terminal.waitForCardPresent(0);
 
             // Connect to the card
             Card card = terminal.connect("*");
             // TODO: Get the card's basic channel
-            CardChannel channel;
+            CardChannel channel; // TODO Complete this line
             System.out.println("Card detected!");
 
             // Write to the NFC tag
@@ -43,7 +46,8 @@ public class SNFCWriter {
     private static void writeUrlToUltralight(CardChannel channel, String url) {
         try {
             // Step 1: Convert the URL into NDEF format for Ultralight
-            // TODO: Create the NDEF message
+            // TODO: Create the NDEF message (ndefMessage)
+            // Hint: The message is a byte array
 
             // Step 2: Write the NDEF message to consecutive pages
             int page = 4; // Start writing at Page 4
@@ -61,12 +65,17 @@ public class SNFCWriter {
                         command[5 + j] = ndefMessage[i + j];
                     } else {
                         // TODO: Pad with zeros
+                        // Hint: Use hexadecimal format
+                        // Hint 2: Cast the hex to byte
                         command[5 + j];
                     }
                 }
 
                 // Transmit the command to write to the page
-                // TODO: Transmit the command of type CommandAPDU through the channel
+                // TODO: Transmit the command through the channel
+                // Hint: The response is a ResponseAPDU (response)
+                // Hint 2: Create a CommandAPDU with the previous command
+                // Complete here
                 if (response.getSW1() == 0x90 && response.getSW2() == 0x00) {
                     System.out.println("Page " + page + " written successfully.");
                 } else {
