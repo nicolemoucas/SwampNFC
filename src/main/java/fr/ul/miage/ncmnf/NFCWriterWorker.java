@@ -1,52 +1,64 @@
 package fr.ul.miage.ncmnf;
 
 import javax.smartcardio.*;
+import javax.swing.*;
 import java.util.List;
 
-public class SNFCWriter {
-    public static void main(String[] args) {
-        String SHREKSOPHONE = "Nadège";
+public class NFCWriterWorker extends SwingWorker<Void, Void> {
+    private final JFrame frame;
+    private final String content;
 
+    public NFCWriterWorker(JFrame frame, String content) {
+        this.frame = frame;
+        this.content = content;
+    }
+
+    @Override
+    protected Void doInBackground() {
+        TerminalFactory factory = TerminalFactory.getDefault();
+        List<CardTerminal> terminals;
         try {
-            // Detect readers
-            TerminalFactory factory = TerminalFactory.getDefault();
-            List<CardTerminal> terminals = factory.terminals().list();
-
-            if (terminals.isEmpty()) {
-                System.out.println("No NFC readers found.");
-                return;
-            }
-
-            // Select the first terminal
-            CardTerminal terminal = terminals.getFirst();
-            System.out.println("Using reader: " + terminal.getName());
-
-            // Wait for a card to be present
-            System.out.println("Waiting for NFC card...");
-            terminal.waitForCardPresent(0);
-
-            // Connect to the card
-            Card card = terminal.connect("*");
-            CardChannel channel = card.getBasicChannel();
-            System.out.println("Card detected!");
-
-            // Write to the NFC tag
-            writeUrlToUltralight(channel, SHREKSOPHONE);
-
-            // Disconnect
-            card.disconnect(false);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            terminals = factory.terminals().list();
+        } catch (CardException e) {
+            SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(frame, "Erreur lors de la recherche des terminaux NFC.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            });
+            return null;
         }
+
+        if (terminals.isEmpty()) {
+            SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(frame, "Aucun terminal NFC trouvé.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            });
+            return null;
+        }
+
+        CardTerminal terminal = terminals.getFirst();
+        try {
+            Card card = terminal.connect("T=1");
+            CardChannel channel = card.getBasicChannel();
+            writeUrlToUltralight(channel, content);
+        } catch (CardException e) {
+            SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(frame, "Erreur lors de l'écriture sur la puce.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            });
+        }
+        return null;
+    }
+
+    @Override
+    protected void done() {
+        SwingUtilities.invokeLater(() -> {
+            JOptionPane.showMessageDialog(frame, "URL écrite avec succès!", "Succès", JOptionPane.INFORMATION_MESSAGE);
+        });
     }
 
     private static void writeUrlToUltralight(CardChannel channel, String url) {
         try {
-            // Step 1: Convert the URL into NDEF format for Ultralight
+            // Convert the URL into NDEF format for Ultralight
             byte[] ndefMessage = createNDEFMessage(url);
 
-            // Step 2: Write the NDEF message to consecutive pages
+            // Write the NDEF message to consecutive pages
             int page = 4; // Start writing at Page 4
             for (int i = 0; i < ndefMessage.length; i += 4) {
                 byte[] command = new byte[9]; // Command to write 4 bytes to a page
