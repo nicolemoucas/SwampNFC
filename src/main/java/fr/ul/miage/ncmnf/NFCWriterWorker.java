@@ -2,11 +2,15 @@ package fr.ul.miage.ncmnf;
 
 import javax.smartcardio.*;
 import javax.swing.*;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.List;
 
 public class NFCWriterWorker extends SwingWorker<Void, Void> {
+    public static final String DATA_CHANGED = "DATA_CHANGED";
     private final JFrame frame;
     private final String content;
+    PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     public NFCWriterWorker(JFrame frame, String content) {
         this.frame = frame;
@@ -38,19 +42,13 @@ public class NFCWriterWorker extends SwingWorker<Void, Void> {
             Card card = terminal.connect("T=1");
             CardChannel channel = card.getBasicChannel();
             writeUrlToUltralight(channel, content);
+            pcs.firePropertyChange(DATA_CHANGED, false, content);
         } catch (CardException e) {
             SwingUtilities.invokeLater(() -> {
                 JOptionPane.showMessageDialog(frame, "Erreur lors de l'écriture sur la puce.", "Erreur", JOptionPane.ERROR_MESSAGE);
             });
         }
         return null;
-    }
-
-    @Override
-    protected void done() {
-        SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(frame, "URL écrite avec succès!", "Succès", JOptionPane.INFORMATION_MESSAGE);
-        });
     }
 
     private static void writeUrlToUltralight(CardChannel channel, String url) {
@@ -113,5 +111,9 @@ public class NFCWriterWorker extends SwingWorker<Void, Void> {
         System.arraycopy(urlBytes, 0, ndefMessage, 7, urlBytes.length);
 
         return ndefMessage;
+    }
+
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+        pcs.addPropertyChangeListener(propertyName, listener);
     }
 }

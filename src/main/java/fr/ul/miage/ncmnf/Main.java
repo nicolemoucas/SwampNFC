@@ -15,14 +15,26 @@ public class Main {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Swamp Near Field Communications");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(600, 600);
-
+            frame.setSize(500, 400);
             JTextArea textArea = new JTextArea();
             textArea.setEditable(false);
             frame.add(new JScrollPane(textArea), BorderLayout.CENTER);
 
             JTextField urlField = new JTextField(20);
-            JButton writeButton = getWriteButton(urlField, frame);
+            JButton writeButton = new JButton("Écrire sur la puce");
+            NFCReaderWorker readerWorker = new NFCReaderWorker(textArea, frame);
+
+            writeButton.addActionListener(e -> {
+                String url = urlField.getText();
+                if (!url.isEmpty()) {
+                    // Exécuter le worker d'écriture
+                    NFCWriterWorker writerWorker = new NFCWriterWorker(frame, url);
+                    writerWorker.execute();
+                    writerWorker.addPropertyChangeListener(NFCWriterWorker.DATA_CHANGED, readerWorker);
+                } else {
+                    JOptionPane.showMessageDialog(frame, "Veuillez entrer une URL.", "Erreur", JOptionPane.ERROR_MESSAGE);
+                }
+            });
 
             JPanel inputPanel = new JPanel();
             inputPanel.add(new JLabel("URL:"));
@@ -31,26 +43,14 @@ public class Main {
             frame.add(inputPanel, BorderLayout.SOUTH);
 
             frame.setVisible(true);
-
-            // Exécuter le worker de lecture
-            NFCReaderWorker readerWorker = new NFCReaderWorker(textArea, frame);
             readerWorker.execute();
+
         });
     }
 
-    private static JButton getWriteButton(JTextField urlField, JFrame frame) {
-        JButton writeButton = new JButton("Écrire sur la puce");
-
-        writeButton.addActionListener(e -> {
-            String url = urlField.getText();
-            if (!url.isEmpty()) {
-                // Exécuter le worker d'écriture
-                NFCWriterWorker writerWorker = new NFCWriterWorker(frame, url);
-                writerWorker.execute();
-            } else {
-                JOptionPane.showMessageDialog(frame, "Veuillez entrer une URL.", "Erreur", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-        return writeButton;
+    public static void switchModes(boolean mode, JFrame frame1, JFrame frame2) {
+        frame1.setVisible(!mode);
+        frame2.setVisible(mode);
     }
+
 }

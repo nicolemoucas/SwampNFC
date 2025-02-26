@@ -2,11 +2,13 @@ package fr.ul.miage.ncmnf;
 
 import javax.smartcardio.*;
 import javax.swing.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class NFCReaderWorker extends SwingWorker<Void, String> {
+public class NFCReaderWorker extends SwingWorker<Void, String> implements PropertyChangeListener {
     private final JTextArea textArea;
     private final JFrame frame;
 
@@ -36,23 +38,14 @@ public class NFCReaderWorker extends SwingWorker<Void, String> {
             });
             return null;
         }
-
-        // Utiliser le premier terminal disponible
         CardTerminal terminal = terminals.getFirst();
-
-        // Boucle infinie pour écouter en continu
         while (true) {
             try {
                 terminal.waitForCardPresent(0);
-
-                // Lire et décoder le message NDEF
                 Card card = terminal.connect("T=1");
                 CardChannel channel = card.getBasicChannel();
-                byte[] ndefMessage = readNDEFMessage(channel);
-                String decodedMessage = decodeNDEFMessage(ndefMessage);
+                String decodedMessage = decodeNDEFMessage(readNDEFMessage(channel));
                 publish(decodedMessage);
-
-                // Attendre que la carte soit retirée
                 terminal.waitForCardAbsent(0);
                 publish("Aucune carte n'a été détectée.");
             } catch (CardException e) {
@@ -82,6 +75,11 @@ public class NFCReaderWorker extends SwingWorker<Void, String> {
             textArea.append("Erreur: " + e.getMessage() + "\n");
         }
     }
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        textArea.setText(evt.getNewValue().toString());
+    }
+
 
     private static byte[] readNDEFMessage(CardChannel channel) throws CardException {
         int startPage = 4; // Start reading from page 4
@@ -95,7 +93,6 @@ public class NFCReaderWorker extends SwingWorker<Void, String> {
             if (pageData.length == 0) {
                 return data;
             }
-
             System.arraycopy(pageData, 0, data, (page - startPage) * 4, pageData.length);
         }
 
