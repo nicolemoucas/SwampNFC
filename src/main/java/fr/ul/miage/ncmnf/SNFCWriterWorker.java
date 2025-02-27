@@ -6,13 +6,13 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.List;
 
-public class NFCWriterWorker extends SwingWorker<Void, Void> {
+public class SNFCWriterWorker extends SwingWorker<Void, Void> {
     public static final String DATA_CHANGED = "DATA_CHANGED";
     private final JFrame frame;
     private final String content;
     PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
-    public NFCWriterWorker(JFrame frame, String content) {
+    public SNFCWriterWorker(JFrame frame, String content) {
         this.frame = frame;
         this.content = content;
     }
@@ -51,8 +51,8 @@ public class NFCWriterWorker extends SwingWorker<Void, Void> {
         return null;
     }
 
-    private static void writeUrlToUltralight(CardChannel channel, String url) {
-        try {
+    private void writeUrlToUltralight(CardChannel channel, String url) {
+        try{
             // Convert the URL into NDEF format for Ultralight
             byte[] ndefMessage = createNDEFMessage(url);
 
@@ -96,7 +96,7 @@ public class NFCWriterWorker extends SwingWorker<Void, Void> {
         }
     }
 
-    private static byte[] createNDEFMessage(String url) {
+    private byte[] createNDEFMessage(String url) {
         byte[] urlBytes = url.getBytes();
         byte[] ndefMessage = new byte[urlBytes.length + 7];
 

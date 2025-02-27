@@ -8,11 +8,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class NFCReaderWorker extends SwingWorker<Void, String> implements PropertyChangeListener {
+public class SNFCReaderWorker extends SwingWorker<Void, String> implements PropertyChangeListener {
     private final JTextArea textArea;
     private final JFrame frame;
 
-    public NFCReaderWorker(JTextArea textArea, JFrame frame) {
+    public SNFCReaderWorker(JTextArea textArea, JFrame frame) {
         this.textArea = textArea;
         this.frame = frame;
     }

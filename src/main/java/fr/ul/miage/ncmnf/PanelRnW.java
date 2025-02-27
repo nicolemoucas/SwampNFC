@@ -4,28 +4,28 @@ import javax.swing.*;
 import java.awt.*;
 
 public class PanelRnW extends JPanel {
-    NFCReaderWorker readerWorker;
-    private boolean isWorkerRunning = false;
+    SNFCReaderWorker readerWorker;
+    private boolean isWorkerRunning;
 
     public PanelRnW(JFrame frame) {
         this.setLayout(new BorderLayout());
         this.setSize(1000, 800);
+        this.setBorder(BorderFactory.createLineBorder(Color.RED));
         JTextArea textArea = new JTextArea();
-        textArea.setMaximumSize(new Dimension(500, 400));
+        textArea.setPreferredSize(new Dimension(500, 400));
         textArea.setEditable(false);
         this.add(new JScrollPane(textArea), BorderLayout.CENTER);
 
-        JTextField urlField = new JTextField(20);
+        JTextField textField = new JTextField(20);
         JButton writeButton = new JButton("Écrire sur la puce");
-        JButton cancelButton = new JButton("switch mode");
-        readerWorker = new NFCReaderWorker(textArea, frame);
+        readerWorker = new SNFCReaderWorker(textArea, frame);
         writeButton.addActionListener(e -> {
-            String url = urlField.getText();
-            if (!url.isEmpty()) {
+            String text = textField.getText();
+            if (!text.isEmpty()) {
                 // Exécuter le worker d'écriture
-                NFCWriterWorker writerWorker = new NFCWriterWorker(frame, url);
+                SNFCWriterWorker writerWorker = new SNFCWriterWorker(frame, text);
                 writerWorker.execute();
-                writerWorker.addPropertyChangeListener(NFCWriterWorker.DATA_CHANGED, readerWorker);
+                writerWorker.addPropertyChangeListener(SNFCWriterWorker.DATA_CHANGED, readerWorker);
             } else {
                 JOptionPane.showMessageDialog(this, "Veuillez entrer une URL.", "Erreur", JOptionPane.ERROR_MESSAGE);
             }
@@ -33,10 +33,9 @@ public class PanelRnW extends JPanel {
 
         JPanel inputPanel = new JPanel();
         inputPanel.add(new JLabel("URL:"));
-        inputPanel.add(urlField);
+        inputPanel.add(textField);
         inputPanel.add(writeButton);
         this.add(inputPanel, BorderLayout.SOUTH);
-        this.add(cancelButton, BorderLayout.NORTH);
 
         JPanel p2 = new JPanel();
         p2.setLayout(new BorderLayout());
