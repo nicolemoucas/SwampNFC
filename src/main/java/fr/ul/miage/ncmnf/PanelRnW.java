@@ -8,16 +8,57 @@ public class PanelRnW extends JPanel {
     private boolean isWorkerRunning;
 
     public PanelRnW(JFrame frame) {
-        this.setLayout(new BorderLayout());
-        this.setSize(1000, 800);
-        this.setBorder(BorderFactory.createLineBorder(Color.RED));
-        JTextArea textArea = new JTextArea();
-        textArea.setPreferredSize(new Dimension(500, 400));
-        textArea.setEditable(false);
-        this.add(new JScrollPane(textArea), BorderLayout.CENTER);
+        Color background = new Color(220,244,177);
+        Color buttons = new Color(122,146,68);
+        Color textColor = new Color(92,69,45);
+        Color buttonText = new Color(243,242,225);
 
-        JTextField textField = new JTextField(20);
-        JButton writeButton = new JButton("Écrire sur la puce");
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS ));
+        this.setPreferredSize(new Dimension(900, 700));
+        this.setBackground(background);
+
+        Font ArialMTBold = new Font("Arial Rounded MT Bold", Font.BOLD, 45);
+        Font Titre2 = new Font("Arial Rounded MT Bold", Font.ITALIC, 20);
+        Font Arial = new Font("Arial", Font.BOLD, 16);
+
+        JLabel titre = new JLabel();
+        titre.setFont(ArialMTBold);
+        titre.setText("Swamp Near Field Communications");
+        titre.setForeground(textColor);
+        titre.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        this.add(leftJustify(titre));
+
+        JLabel sousTitre = new JLabel();
+        sousTitre.setFont(Titre2);
+        sousTitre.setText("Contenu de la puce");
+        sousTitre.setForeground(textColor);
+        sousTitre.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        this.add(leftJustify(sousTitre));
+
+        JTextArea textArea = new JTextArea();
+        textArea.setFont(Arial);
+        textArea.setEditable(false);
+        textArea.setForeground(textColor);
+        textArea.setBackground(background);
+        textArea.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(textColor), BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+        this.add(new JScrollPane(textArea));
+
+        JLabel sousTitre2 = new JLabel();
+        sousTitre2.setFont(Titre2);
+        sousTitre2.setText("Écriture sur la puce");
+        sousTitre2.setForeground(textColor);
+        sousTitre2.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        this.add(leftJustify(sousTitre2));
+
+        JTextField textField = new JTextField(56);
+        textField.setFont(Arial);
+        textField.setForeground(textColor);
+        textField.setBackground(background);
+        textField.setBorder(BorderFactory.createLineBorder(textColor));
+        JButton writeButton = new JButton("Écraser");
+        writeButton.setForeground(buttonText);
+        writeButton.setBackground(buttons);
+        writeButton.setFont(Arial);
         readerWorker = new SNFCReaderWorker(textArea, frame);
         writeButton.addActionListener(e -> {
             String text = textField.getText();
@@ -27,23 +68,27 @@ public class PanelRnW extends JPanel {
                 writerWorker.execute();
                 writerWorker.addPropertyChangeListener(SNFCWriterWorker.DATA_CHANGED, readerWorker);
             } else {
-                JOptionPane.showMessageDialog(this, "Veuillez entrer une URL.", "Erreur", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Veuillez entrer une valeur.", "Erreur", JOptionPane.ERROR_MESSAGE);
             }
         });
 
         JPanel inputPanel = new JPanel();
-        inputPanel.add(new JLabel("URL:"));
+        inputPanel.setBackground(background);
         inputPanel.add(textField);
         inputPanel.add(writeButton);
-        this.add(inputPanel, BorderLayout.SOUTH);
+        this.add(inputPanel);
 
-        JPanel p2 = new JPanel();
-        p2.setLayout(new BorderLayout());
-        JTextArea textArea2 = new JTextArea();
-        textArea2.setMaximumSize(new Dimension(500, 400));
         readerWorker.execute();
         isWorkerRunning = true;
     }
+
+    private Component leftJustify( JLabel label )  {
+        Box  b = Box.createHorizontalBox();
+        b.add( label );
+        b.add( Box.createHorizontalGlue() );
+        return b;
+    }
+
 
     public void switchMode(boolean visible) {
         this.setVisible(visible);
