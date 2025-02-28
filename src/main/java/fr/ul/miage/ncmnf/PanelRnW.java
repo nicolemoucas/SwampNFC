@@ -63,7 +63,6 @@ public class PanelRnW extends JPanel {
         writeButton.addActionListener(e -> {
             String text = textField.getText();
             if (!text.isEmpty()) {
-                // Exécuter le worker d'écriture
                 SNFCWriterWorker writerWorker = new SNFCWriterWorker(frame, text);
                 writerWorker.execute();
                 writerWorker.addPropertyChangeListener(SNFCWriterWorker.DATA_CHANGED, readerWorker);
@@ -89,16 +88,4 @@ public class PanelRnW extends JPanel {
         return b;
     }
 
-    public void switchMode(boolean visible) {
-        this.setVisible(visible);
-        if (visible) {
-            if(!isWorkerRunning) {
-                readerWorker.execute();
-                isWorkerRunning = true;
-            }
-        } else {
-            readerWorker.cancel(true);
-            isWorkerRunning = false;
-        }
-    }
 }

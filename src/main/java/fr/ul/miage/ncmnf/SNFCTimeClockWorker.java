@@ -76,7 +76,6 @@ public class SNFCTimeClockWorker extends SwingWorker<Void, Void> {
 
         StringBuilder stringBuilder = new StringBuilder();
 
-
         if (nbBadgeage % 2 != 0) {
             stringBuilder.append("Entrée ");
         } else {

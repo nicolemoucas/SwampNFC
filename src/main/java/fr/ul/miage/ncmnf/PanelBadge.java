@@ -50,7 +50,9 @@ public class PanelBadge extends JPanel {
         timeClockWorker.addPropertyChangeListener(SNFCTimeClockWorker.GO_TO_WORK, (e) ->
                 JOptionPane.showMessageDialog(this, "Ca fait beaucoup là non ? Tu n'as pas du travail " + e.getNewValue() + "???", "Retourne travailler", JOptionPane.WARNING_MESSAGE));
 
+        timeClockWorker.execute();
     }
+
     private Component leftJustify( JLabel label )  {
         Box  b = Box.createHorizontalBox();
         b.add( label );
@@ -58,16 +60,4 @@ public class PanelBadge extends JPanel {
         return b;
     }
 
-    public void switchMode(boolean visible) {
-        this.setVisible(visible);
-        if (visible) {
-            if(!isWorkerRunning) {
-                timeClockWorker.execute();
-                isWorkerRunning = true;
-            }
-        } else {
-            timeClockWorker.cancel(true);
-            isWorkerRunning = false;
-        }
-    }
 }
