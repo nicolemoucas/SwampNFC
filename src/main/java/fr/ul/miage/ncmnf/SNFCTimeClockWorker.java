@@ -50,7 +50,9 @@ public class SNFCTimeClockWorker extends SwingWorker<Void, Void> {
                     if(checkPermission(id)) {
                         badgeage(id, badgeageHistory);
                     } else {
-                        pcs.firePropertyChange(UNAUTHORIZED, null, id);
+                        if(!id.isEmpty()) {
+                            pcs.firePropertyChange(UNAUTHORIZED, null, id);
+                        }
                     }
                     terminal.waitForCardAbsent(0);
                 } catch (CardException e) {
