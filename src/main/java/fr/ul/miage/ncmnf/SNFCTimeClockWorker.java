@@ -4,14 +4,12 @@ import javax.smartcardio.*;
 import javax.swing.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -198,12 +196,7 @@ public class SNFCTimeClockWorker extends SwingWorker<Void, Void> {
 
     public boolean checkPermission(String id) {
 
-        FileReader reader;
-        try {
-            reader = new FileReader(this.getClass().getClassLoader().getResource("authorized.txt").getFile());
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        InputStreamReader reader = new InputStreamReader(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream("authorized.txt")));
         BufferedReader br = new BufferedReader(reader);
             String myLine;
 

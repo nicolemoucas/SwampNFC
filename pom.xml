@@ -21,11 +21,6 @@
             <artifactId>jnasmartcardio</artifactId>
             <version>0.2.7</version>
         </dependency>
-        <dependency>
-            <groupId>com.formdev</groupId>
-            <artifactId>flatlaf</artifactId>
-            <version>3.5.4</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -53,7 +48,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>fr.ul.miage.ncmnf.SNFCWriter</mainClass>
+                            <mainClass>fr.ul.miage.ncmnf.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
