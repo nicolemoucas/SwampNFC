@@ -21,6 +21,7 @@ public class SNFCTimeClockWorker extends SwingWorker<Void, Void> {
     public static final String GO_TO_WORK = "GO_TO_WORK";
 
     PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    List<String> permissions = loadPermissionFile();
 
     @Override
     protected Void doInBackground() {
@@ -194,29 +195,18 @@ public class SNFCTimeClockWorker extends SwingWorker<Void, Void> {
         pcs.addPropertyChangeListener(propertyName, listener);
     }
 
-    public boolean checkPermission(String id) {
-
+    private List<String> loadPermissionFile() {
         InputStreamReader reader = new InputStreamReader(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream("authorized.txt")));
         BufferedReader br = new BufferedReader(reader);
-            String myLine;
 
-            while (true)
-            {
-                try {
-                    if ((myLine = br.readLine()) == null) break;
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                List<String> contents = Arrays.stream(myLine.split(",")).toList();
-                for (String c : contents) {
-                    if(id.toLowerCase().contains(c.toLowerCase())) {
-                        return true;
-                    }
-                }
-                return false;
+         return br.lines()
+                    .map(s -> s.split(","))
+                    .flatMap(Arrays::stream)
+                    .toList();
+    }
 
-            }
-            return false;
+    public boolean checkPermission(String id) {
+        return permissions.stream().anyMatch(permission -> permission.equalsIgnoreCase(id));
     }
 
 }
