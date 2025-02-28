@@ -1,6 +1,7 @@
 package fr.ul.miage.ncmnf;
 
 import javax.smartcardio.*;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -177,5 +178,6 @@ public class SNFCReaderBadger {
 
         return new String(uriMessage, StandardCharsets.UTF_8);
     }
+
 }
 

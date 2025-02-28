@@ -4,7 +4,12 @@ import javax.smartcardio.*;
 import javax.swing.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.FileHandler;
@@ -14,6 +19,7 @@ import java.util.logging.SimpleFormatter;
 public class SNFCTimeClockWorker extends SwingWorker<Void, Void> {
     private final static Logger LOG = Logger.getLogger(SNFCTimeClockWorker.class.getName());
     public static final String DATA_CHANGED = "DATA_CHANGED";
+    public static final String UNAUTHORIZED = "UNAUTHORIZED";
 
     PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
@@ -25,7 +31,6 @@ public class SNFCTimeClockWorker extends SwingWorker<Void, Void> {
             FileHandler fileHandler = new FileHandler("NFC-Reader.log");
             fileHandler.setFormatter(new SimpleFormatter());
             LOG.addHandler(fileHandler);
-
 
             CardTerminal terminal = getCardTerminal();
             if (terminal == null) return null;
@@ -41,9 +46,11 @@ public class SNFCTimeClockWorker extends SwingWorker<Void, Void> {
                     } while(i < 101);
 
                     String id = readCard(terminal);
-
-                    badgeage(id, badgeageHistory);
-
+                    if(checkPermission(id)) {
+                        badgeage(id, badgeageHistory);
+                    } else {
+                        pcs.firePropertyChange(UNAUTHORIZED, null, id);
+                    }
                     terminal.waitForCardAbsent(0);
                 } catch (CardException e) {
                     e.printStackTrace();
@@ -89,7 +96,7 @@ public class SNFCTimeClockWorker extends SwingWorker<Void, Void> {
         }
     }
 
-    private static String readCard(CardTerminal terminal) throws CardException {
+    private String readCard(CardTerminal terminal) throws CardException {
         // Connect to the card
         Card card = terminal.connect("*");
         CardChannel channel = card.getBasicChannel();
@@ -109,7 +116,7 @@ public class SNFCTimeClockWorker extends SwingWorker<Void, Void> {
         return decodedData;
     }
 
-    private static CardTerminal getCardTerminal() throws CardException {
+    private CardTerminal getCardTerminal() throws CardException {
         // Obtenir le terminal NFC en s'inspirant de la classe précédente
         // Detect readers
         TerminalFactory factory = TerminalFactory.getDefault();
@@ -126,7 +133,7 @@ public class SNFCTimeClockWorker extends SwingWorker<Void, Void> {
         return terminal;
     }
 
-    private static byte[] readNDEFMessage(CardChannel channel) throws CardException {
+    private byte[] readNDEFMessage(CardChannel channel) throws CardException {
         int startPage = 4; // Start reading from page 4
         int endPage = 135; // End reading at page 17 (adjust as needed)
         byte[] data = new byte[(endPage - startPage + 1) * 4];
@@ -146,7 +153,7 @@ public class SNFCTimeClockWorker extends SwingWorker<Void, Void> {
         return data;
     }
 
-    private static String decodeNDEFMessage(byte[] data) {
+    private String decodeNDEFMessage(byte[] data) {
         // Vérifier si les données commencent par le TLV NDEF (0x03)
         if (data.length < 2 || data[0] != 0x03) {
             return "Données NDEF non valides.";
@@ -186,4 +193,35 @@ public class SNFCTimeClockWorker extends SwingWorker<Void, Void> {
     public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
         pcs.addPropertyChangeListener(propertyName, listener);
     }
+
+    public boolean checkPermission(String id) {
+
+        FileReader reader;
+        try {
+            reader = new FileReader(this.getClass().getClassLoader().getResource("authorized.txt").getFile());
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        BufferedReader br = new BufferedReader(reader);
+            String myLine;
+
+            while (true)
+            {
+                try {
+                    if ((myLine = br.readLine()) == null) break;
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                List<String> contents = Arrays.stream(myLine.split(",")).toList();
+                for (String c : contents) {
+                    if(id.toLowerCase().contains(c.toLowerCase())) {
+                        return true;
+                    }
+                }
+                return false;
+
+            }
+            return false;
+    }
+
 }

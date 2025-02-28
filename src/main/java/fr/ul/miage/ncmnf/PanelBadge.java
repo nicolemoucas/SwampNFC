@@ -26,6 +26,9 @@ public class PanelBadge extends JPanel {
             this.repaint();
         });
 
+        timeClockWorker.addPropertyChangeListener(SNFCTimeClockWorker.UNAUTHORIZED, (e) ->
+                JOptionPane.showMessageDialog(this, "Entrée refusée, vous n'avez pas les droits " + e.getNewValue() , "Erreur", JOptionPane.ERROR_MESSAGE));
+
     }
 
     public void switchMode(boolean visible) {
