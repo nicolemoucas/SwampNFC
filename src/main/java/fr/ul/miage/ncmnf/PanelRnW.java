@@ -89,7 +89,6 @@ public class PanelRnW extends JPanel {
         return b;
     }
 
-
     public void switchMode(boolean visible) {
         this.setVisible(visible);
         if (visible) {

@@ -20,6 +20,7 @@ public class SNFCTimeClockWorker extends SwingWorker<Void, Void> {
     private final static Logger LOG = Logger.getLogger(SNFCTimeClockWorker.class.getName());
     public static final String DATA_CHANGED = "DATA_CHANGED";
     public static final String UNAUTHORIZED = "UNAUTHORIZED";
+    public static final String GO_TO_WORK = "GO_TO_WORK";
 
     PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
@@ -92,7 +93,7 @@ public class SNFCTimeClockWorker extends SwingWorker<Void, Void> {
         pcs.firePropertyChange(DATA_CHANGED, null, stringBuilder.toString());
 
         if (nbBadgeage > 9) {
-            LOG.info("Ca fait beaucoup là non ? Tu n'as pas du travail " + id + " ???");
+            pcs.firePropertyChange(GO_TO_WORK, null, id);
         }
     }
 
